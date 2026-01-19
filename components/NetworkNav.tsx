@@ -18,10 +18,14 @@ export default function NetworkNav({ currentSite, siteName, siteColor }: Network
     if (consent) {
       try {
         const encoded = btoa(consent)
-        setConsentParam(`?cathedral_consent=${encoded}`)
+        const param = `?cathedral_consent=${encoded}`
+        setConsentParam(param)
+        console.log('🔗 NetworkNav: Will add consent to links:', { consent, encoded: encoded.substring(0, 50) + '...' })
       } catch (e) {
-        console.error('Failed to encode consent')
+        console.error('❌ NetworkNav: Failed to encode consent', e)
       }
+    } else {
+      console.log('ℹ️ NetworkNav: No consent to propagate yet')
     }
   }, [])
 
@@ -60,14 +64,32 @@ export default function NetworkNav({ currentSite, siteName, siteColor }: Network
                 {index > 0 && <span className="text-gray-700 mx-1">•</span>}
                 {site.id === currentSite ? (
                   <a
-                    href={site.url + consentParam}
+                    href={site.url}
+                    onClick={(e) => {
+                      // Add consent parameter dynamically on click
+                      const consent = localStorage.getItem('cathedral-cookie-consent')
+                      if (consent) {
+                        e.preventDefault()
+                        const encoded = btoa(consent)
+                        window.location.href = `${site.url}?cathedral_consent=${encoded}`
+                      }
+                    }}
                     className={`${site.color} font-bold px-2 py-1 rounded bg-gray-800/50 hover:bg-gray-800/70 transition`}
                   >
                     {site.name}
                   </a>
                 ) : (
                   <a
-                    href={site.url + consentParam}
+                    href={site.url}
+                    onClick={(e) => {
+                      // Add consent parameter dynamically on click
+                      const consent = localStorage.getItem('cathedral-cookie-consent')
+                      if (consent) {
+                        e.preventDefault()
+                        const encoded = btoa(consent)
+                        window.location.href = `${site.url}?cathedral_consent=${encoded}`
+                      }
+                    }}
                     className={`${site.color} hover:underline transition px-2 py-1 rounded hover:bg-gray-800/30`}
                   >
                     {site.name}
@@ -76,6 +98,18 @@ export default function NetworkNav({ currentSite, siteName, siteColor }: Network
               </div>
             ))}
           </div>
+
+          {/* Desktop: Community Link */}
+          <a
+            href="https://git-iscommunity.com"
+            className="hidden md:flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors group"
+            title="Join Community"
+          >
+            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 3 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span className="hidden sm:inline text-sm">Community</span>
+          </a>
 
           {/* Desktop: Store Link */}
           <a
@@ -115,10 +149,19 @@ export default function NetworkNav({ currentSite, siteName, siteColor }: Network
               {sites.map((site) => (
                 <a
                   key={site.id}
-                  href={site.url + consentParam}
+                  href={site.url}
+                  onClick={(e) => {
+                    // Add consent parameter dynamically on click
+                    const consent = localStorage.getItem('cathedral-cookie-consent')
+                    if (consent) {
+                      e.preventDefault()
+                      const encoded = btoa(consent)
+                      window.location.href = `${site.url}?cathedral_consent=${encoded}`
+                    }
+                  }}
                   className={`block px-4 py-2 rounded transition ${site.id === currentSite
-                      ? `${site.color} font-bold bg-gray-800/50`
-                      : `${site.color} hover:bg-gray-800/30`
+                    ? `${site.color} font-bold bg-gray-800/50`
+                    : `${site.color} hover:bg-gray-800/30`
                     }`}
                 >
                   Git is {site.name}
